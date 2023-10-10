@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# SPC Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+SunFounder Power Control Dashboard
 
-## Available Scripts
+## Install
 
-In the project directory, you can run:
+### Install node on Raspberry Pi
 
-### `npm start`
+Download and import the Nodesource GPG key
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Create deb repository, NODE_MAJOR can be changed depending on the version you need.
+```bash
+NODE_MAJOR=20
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Run Update and Install
+```bash
+sudo apt-get update
+sudo apt-get install nodejs node -y
+```
 
-### `npm test`
+### Insall dependency
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install
+```
 
-### `npm run build`
+## Usage
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### 网页打开项目
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+先在源码文件中输入 `ssh -t xo@192.168.18.17 -p 22` 或者通过 SFTP登录，密码为：123
+输入 `cd spc-dashboard/build `和` node main.js`后可以在在网页上输入http://192.168.18.17:34001/进行访问项目，输入http://192.168.18.17:34001/api/v1.0/get-all可以访问数据`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### webpack打包项目
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+npx webpack
+```
+命令运行完成后，在项目的根目录会自动新建一个 `dist/bundle.js` 文件，创建一个用于发布的文件夹，将 `bundle.js` 复制到新的文件夹中，在新文件夹中创建一个`.html`文件,
+`body`添加 <div id="root"></div><script src="./bundle.js"></script> 即可。
