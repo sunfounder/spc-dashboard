@@ -7,7 +7,7 @@ export default function IndexRouter(props) {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/home" element={<Home {...props} />} />
+        <Route path="/dashboard" element={<Home {...props} />} />
         <Route path="/minimal" element={<Minimal {...props} />} />
         <Route
           path="/"
@@ -17,7 +17,7 @@ export default function IndexRouter(props) {
             // ) : (
             //   <Navigate to="/hom" replace />
             //   )
-            <Navigate to="/home" replace />
+            <Navigate to="/dashboard" replace />
           }
         />
       </Routes>

@@ -9,6 +9,10 @@ import "./home.css";
 const ip = window.location.hostname;
 const HOST = `http://${ip}:34001/api/v1.0/`;
 // const HOST = `http://192.168.18.17:34001/api/v1.0/`;
+const BOARDS = [
+  "UPS Case",
+  "Pironman",
+]
 
 class Home extends Component {
   constructor(props) {
@@ -147,6 +151,7 @@ class Home extends Component {
       fanMode: "Auto",
       fanState: false,
       fanModeIndex: 3,
+      boardName: ''
     }
     this.fanModes = [
       'quiet',
@@ -210,6 +215,7 @@ class Home extends Component {
       fanMode: firstUpperCase(data.fan_mode),
       fanState: data.fan_state,
       fanModeIndex: this.fanModes.indexOf(data.fan_mode),
+      boardName: BOARDS[data.board_id],
     })
   }
   themeSwitching = (checked) => {
@@ -260,7 +266,7 @@ class Home extends Component {
       }}>
         <div className="titleBar">
           <div className="homeTitle" >
-            UPS Case
+            {this.state.boardName}
           </div>
           <div className="themeSwitch">
             <span>Dark mode</span>
