@@ -1,3 +1,3 @@
 # SPC Dashboard
 
-SunFounder Power Control Dashboard
+SunFounder Power Control Dashboard 
