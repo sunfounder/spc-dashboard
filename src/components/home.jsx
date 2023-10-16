@@ -31,6 +31,18 @@ class Home extends Component {
             title: "Status",
             unit: "",
             chart: false,
+          },
+          current: {
+            title: "Current",
+            unit: "A",
+            color: props.theme.foregroundBlue,
+            chart: true,
+          },
+          power: {
+            title: "Power",
+            unit: "W",
+            color: props.theme.foregroundYellow,
+            chart: true,
           }
         },
         fan: {
@@ -121,6 +133,7 @@ class Home extends Component {
           timestamp: null,
           isPluggedIn: "Unplugged",
           voltage: -1,
+          current: -1,
         },
         fan: {
           timestamp: null,
@@ -182,6 +195,8 @@ class Home extends Component {
         timestamp: timestamp,
         isPluggedIn: data.is_usb_plugged_in  ? "Plugged in" : "Unplugged",
         voltage: data.usb_voltage / 1000,
+        current: data.usb_current / 1000,
+        power: data.usb_voltage / 1000 * data.usb_current / 1000,
       },
       fan: {
         timestamp: timestamp,
