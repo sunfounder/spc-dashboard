@@ -21,16 +21,16 @@ class Home extends Component {
     this.state = {
       details: {
         usb: {
+          isPluggedIn: {
+            title: "Status",
+            unit: "",
+            chart: false,
+          },
           voltage: {
             title: "Voltage",
             unit: "V",
             color: props.theme.foregroundGreen,
             chart: true,
-          },
-          isPluggedIn: {
-            title: "Status",
-            unit: "",
-            chart: false,
           },
           current: {
             title: "Current",
@@ -220,6 +220,7 @@ class Home extends Component {
       },
       output: {
         timestamp: timestamp,
+        source: data.power_source,
         voltage: data.output_voltage / 1000,
         current: data.output_current / 1000,
         power: data.output_voltage / 1000 * data.output_current / 1000,
