@@ -9,10 +9,17 @@ import "./home.css";
 const ip = window.location.hostname;
 const HOST = `http://${ip}:34001/api/v1.0/`;
 // const HOST = `http://192.168.18.17:34001/api/v1.0/`;
+
 const BOARDS = [
   "UPS Case",
   "Pironman",
 ]
+
+const POWER_SOURCE = [
+  "USB",
+  "Battery",
+]
+
 
 class Home extends Component {
   constructor(props) {
@@ -220,7 +227,7 @@ class Home extends Component {
       },
       output: {
         timestamp: timestamp,
-        source: data.power_source,
+        source: POWER_SOURCE[data.power_source],
         voltage: data.output_voltage / 1000,
         current: data.output_current / 1000,
         power: data.output_voltage / 1000 * data.output_current / 1000,
