@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import "./toggleSwitch.css";
 
-class ToggleSwitch extends Component{
+class ToggleSwitch extends Component {
 
   handleChange = () => {
     let newState = !this.props.state;
@@ -11,7 +11,7 @@ class ToggleSwitch extends Component{
 
   render() {
     return (
-      <div className={`toggle-switch ${this.props.state ? "active":""}`}
+      <div className={`toggle-switch ${this.props.state ? "active" : ""}`}
         onClick={this.handleChange}>
         <div className="toggle-switch-background"></div>
         <div className="toggle-switch-handle"></div>
@@ -20,4 +20,4 @@ class ToggleSwitch extends Component{
   }
 }
 
-export default ToggleSwitch
+export default ToggleSwitch;

@@ -1,8 +1,19 @@
-import './App.css';
-import React from 'react'
-import Home from './components/home';
-import Minimal from './components/minimal';
+import React, { useEffect, useState } from "react";
+import CssBaseline from "@mui/material/CssBaseline";
 import RouterView from './router/index';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  green,
+  indigo,
+  deepPurple,
+  amber,
+  lightGreen,
+  pink,
+  blue,
+  cyan,
+} from '@mui/material/colors';
+
+import './App.css';
 
 let THEMES = {
   dark: {
@@ -25,8 +36,8 @@ let THEMES = {
     foregroundPurple: "rgb(172 123 239)",
     svgBackgroundColor: "#FAFAFA",
     buttonBackgroundColor: "rgba(250, 250, 250, 0.267)",
-    sliderBackgroundColor:"#FAFAFA",
-    sliderHandleBackgroundColor:"rgb(34, 179, 82)"
+    sliderBackgroundColor: "#FAFAFA",
+    sliderHandleBackgroundColor: "rgb(34, 179, 82)"
   },
   light: {
     name: "light",
@@ -47,40 +58,132 @@ let THEMES = {
     foregroundBlue: "rgb(34, 89, 179)",
     foregroundPurple: "rgb(107 61 171)",
     svgBackgroundColor: "#404040",
-    sliderBackgroundColor:"rgb(243, 243, 243)",
-    sliderHandleBackgroundColor:"rgb(73, 227, 122)"
+    sliderBackgroundColor: "rgb(243, 243, 243)",
+    sliderHandleBackgroundColor: "rgb(73, 227, 122)"
   }
 }
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    fan: {
+      main: green[500],
+    },
+    externalInput: {
+      main: indigo[500],
+    },
+    battery: {
+      main: deepPurple[500],
+    },
+    raspberryPiPower: {
+      main: pink[500],
+    },
+    storage: {
+      main: lightGreen[500],
+    },
+    memory: {
+      main: cyan[500],
+    },
+    processor: {
+      main: blue[500],
+    },
+    network: {
+      main: amber[500],
+    },
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background-color: rgb(60, 60, 60);
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #888;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+      }
+      `,
+    },
+  },
+});
 
-class App extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      theme: THEMES.dark,
-      themeName: "dark",
-    }
-  }
+const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+    externalInput: {
+      main: indigo[100],
+    },
+    fan: {
+      main: green[100],
+    },
+    battery: {
+      main: deepPurple[100],
+    },
+    raspberryPiPower: {
+      main: pink[100],
+    },
+    storage: {
+      main: lightGreen[100],
+    },
+    memory: {
+      main: cyan[100],
+    },
+    processor: {
+      main: blue[100],
+    },
+    network: {
+      main: amber[100],
+    },
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+          background-color: rgb(240, 240, 240);
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #aaa;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background-color: #bbb;
+        }
+      `,
+    },
+  },
+});
+const App = () => {
+  const [theme, setTheme] = useState(null);
+  const [currentTheme, setCurrentTheme] = useState(null);
 
-  changeTheme = (themeName) => {
+  const changeTheme = (themeName) => {
     if (Object.keys(THEMES).indexOf(themeName) >= 0) {
-      this.setState({
-        theme: THEMES[themeName],
-        themeName: themeName
-      });
+      setTheme(THEMES[themeName]);
     }
+    if (themeName === 'dark')
+      setCurrentTheme(darkTheme);
+    else
+      setCurrentTheme(lightTheme);
+  };
 
+  if (theme === null) {
+    let _theme = window.localStorage.getItem("SPCTheme");
+    if (_theme === null) _theme = "light"; // default theme
+    changeTheme(_theme);
   }
 
-  render() {
-    let a = false;
-    return (
+  return (
+    <ThemeProvider theme={currentTheme}>
+      <CssBaseline />
       <div className='app'>
-        <RouterView onModeChange={this.changeTheme} theme={this.state.theme}></RouterView>
-         {/* <Home onModeChange={this.changeTheme} theme={this.state.theme}></Home> */}
-         {/* <Minimal onModeChange={this.changeTheme} theme={this.state.theme}></Minimal> */}
+        <RouterView onModeChange={changeTheme} theme={theme} />
       </div>
-    )
-  }
+    </ThemeProvider>
+  );
 }
-
-export default App
+export default App;

@@ -1,6 +1,6 @@
-import React, { Component,createRef  } from 'react';
+import React, { Component, createRef } from 'react';
 import ToggleSwitch from './toggleSwitch.jsx';
-import Card from './card';
+import Card from './card.jsx';
 
 import "./minimal.css";
 
@@ -149,14 +149,14 @@ class Minimal extends Component {
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }
-    this.updateInterval = setInterval(this.updateDate, 1000);
+    // this.updateInterval = setInterval(this.updateDate, 1000);
     let isDark = window.localStorage.getItem("isDark") || "true";
     isDark = isDark === "true";
     this.themeSwitching(isDark);
 
   }
   updateChartSize = () => {
-    let renderLineChart = null
+    // let renderLineChart = null
     let dom = document.getElementsByClassName("minimalData").clientWidth
     console.log(dom)
     // const chartBox = this.minimalChartBoxRef.current; // 获取chartBox元素
@@ -175,12 +175,12 @@ class Minimal extends Component {
     let newDatas = {
       usb: {
         timestamp: timestamp,
-        isPluggedIn: data.is_usb_plugged_in  ? "Plugged in" : "Unplugged",
+        isPluggedIn: data.is_usb_plugged_in ? "Plugged in" : "Unplugged",
         voltage: data.usb_voltage / 1000,
       },
       fan: {
         timestamp: timestamp,
-        state: data.fan_state  ? "ON" : "OFF",
+        state: data.fan_state ? "ON" : "OFF",
         speed: data.fan_speed,
         cpu_temperature: data.cpu_temperature,
       },
@@ -192,7 +192,7 @@ class Minimal extends Component {
       battery: {
         timestamp: timestamp,
         percentage: data.battery_percentage,
-        isCharging: data.is_charging  ? "Charging" : "Not charging",
+        isCharging: data.is_charging ? "Charging" : "Not charging",
         voltage: data.battery_voltage / 1000,
         current: data.battery_current / 1000,
         power: data.battery_voltage / 1000 * data.battery_current / 1000,
@@ -240,7 +240,7 @@ class Minimal extends Component {
           <div className='minimalChart' >
             {Object.keys(details).map((category) => (
               // ref={this.minimalChartBoxRef}
-              <div className="minimalData" key={category}  style={{
+              <div className="minimalData" key={category} style={{
                 backgroundColor: theme.chartBackgroundColor,
                 border: theme.cardBorder,
               }}>
@@ -249,7 +249,7 @@ class Minimal extends Component {
                   theme={this.props.theme}
                   details={details[category]}
                   data={datas[category]}
-                  minimalChartSize = {this.state.chartSize}
+                  minimalChartSize={this.state.chartSize}
                 />
               </div>
             ))}

@@ -1,16 +1,17 @@
 .card {
   min-width: 500px;
   width: unset;
+  max-width: 1000px;
   min-height: 360px;
   max-height: 500px;
   -webkit-box-flex: 4;
   /* flex-grow: 4; */
   flex-basis: 0px;
   display: flex;
-  backdrop-filter: blur(20px);
-  background-color: rgba(33, 33, 33, 0.267);
-  border-radius: 25px;
-  border: 1px solid rgba(250, 250, 250, 0.2);
+  /* backdrop-filter: blur(20px);
+  background-color: rgba(33, 33, 33, 0.267); */
+  /* border-radius: 25px; */
+  /* border: 1px solid rgba(250, 250, 250, 0.2); */
 }
 
 @media (max-width: 499px) {
@@ -22,17 +23,6 @@
     max-height: unset;
   }
 }
-/* @media (min-width: 801px) {
-  .card {
-    min-width: 500px;
-  }
-}
-@media (min-width: 500px) and (max-width: 600px) {
-  .card {
-    min-width: 500px;
-    color: yellow;
-  }
-} */
 
 .box {
   position: relative;
@@ -53,9 +43,9 @@
   position: relative;
   top: -10px;
   left: 20px;
-  background-color: rgb(82, 215, 255);
+  /* background-color: rgb(82, 215, 255); */
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 35px 0px;
+  /* box-shadow: rgba(0, 0, 0, 0.15) 2px 2px 35px 0px; */
   transition: background-color 0.5s ease 0s;
 }
 
@@ -64,17 +54,20 @@
   flex-direction: row;
   flex: 1 1 auto;
 }
+
 @media (max-width: 599px) {
   .detailBox {
     flex-direction: column-reverse;
     flex: 1 1 auto;
     padding: 20px 0px;
   }
-  .children{
+
+  .children {
     top: 98px !important;
     left: 0px;
   }
 }
+
 .pictureBox {
   display: flex;
   flex-direction: column;
@@ -84,22 +77,11 @@
   -webkit-box-flex: 0 !important;
   flex-grow: 0 !important;
 }
+
 @media (max-width: 199px) {
   .pictureBox {
     width: 50%;
   }
-}
-
-.chartBox {
-  position: relative;
-  flex: 1 1 auto;
-  /* min-width: 0px; */
-  min-width: 150px;
-  min-height: 150px;
-  background-color: black;
-  border-radius: 20px;
-  right: -15px;
-  bottom: -15px;
 }
 
 .mainTitle {
@@ -143,6 +125,7 @@
   /* font-size: 1rem; */
   /* font-weight: bold; */
   padding-bottom: 3px;
+  width: 100px;
 }
 
 .fanButton {
@@ -173,8 +156,54 @@
   margin-right: 4px;
 }
 
-.children {
+.config {
   position: absolute;
   right: 20px;
   top: 40px;
+}
+
+.multipleChartsBox {
+  position: relative;
+  flex: 1 1 auto;
+  /* min-width: 0px; */
+  min-width: 150px;
+  min-height: 150px;
+  border-radius: 20px;
+  right: -15px;
+  bottom: -15px;
+}
+
+.multipleChartsBox>div {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-flow: row;
+  gap: 8px;
+  place-items: stretch;
+  -webkit-box-align: stretch;
+  height: 110%;
+  width: 100%;
+  position: absolute;
+  bottom: -10px;
+  /* right: -10px; */
+  z-index: 1;
+}
+
+.chart {
+  /* width: 20%;
+  height: 50%;
+  background-color: red; */
+  position: relative;
+  display: flex;
+  min-width: 0px;
+  /* background-color: rgb(33, 33, 33); */
+  /* border-radius: 25px 10px 10px; */
+  border-radius: 20px;
+  z-index: auto;
+  transition: background-color 0.3s ease 0s;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  opacity: 1;
+  transform: none;
 }

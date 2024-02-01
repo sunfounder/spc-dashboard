@@ -11,8 +11,30 @@ function round(number, index) {
 }
 
 function firstUpperCase(string) {
-  string =  string[0].toUpperCase() + string.slice(1);
+  if (!string) return;
+  string = string[0].toUpperCase() + string.slice(1);
   return string;
 }
 
-export { isNum, round, firstUpperCase };
+function formatBytes(bytes) {
+  if (typeof bytes !== 'number') return '0';
+  var units = ['', 'K', 'M', 'G', 'T'];
+  var unitIndex = 0;
+
+  while (bytes >= 1024 && unitIndex < units.length - 1) {
+    bytes /= 1024;
+    unitIndex++;
+  }
+  return bytes.toFixed(2) + ' ' + units[unitIndex];
+}
+
+// 格式化时间
+function timeFormatting(time) {
+  const timeString = time;
+  const dateTime = new Date(timeString);
+  const formattedTime = dateTime.toISOString().replace("T", " ").replace("Z", "");
+  return formattedTime;
+}
+
+
+export { isNum, round, firstUpperCase, formatBytes, timeFormatting };

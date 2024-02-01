@@ -1,37 +1,38 @@
-import React, { Component } from "react"
-import { Slider, Switch, ConfigProvider } from 'antd';
+import React from "react"
+// import React, { useState } from "react"
+// import { Switch, ConfigProvider } from 'antd';
+import { Box, Slider, Switch } from '@mui/material';
 import './fanControl.css'
 import { firstUpperCase } from '../js/utils';
-class FanControl extends Component {
+const FanControl = (props) => {
+  const modes = props.modes.map((mode, index) => {
+    return {
+      value: index,
+      label: firstUpperCase(mode),
+    }
+  })
 
-  getMode = (index) => {
-    let mode = this.props.modes[index];
-    return firstUpperCase(mode);
+  const getMode = (index) => {
+    return modes[index].label;
   }
 
-  render() {
-    let marks = {}
-    this.props.modes.map((mark, index) => {
-      marks[index] = " ";
-    })
-    return (
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: this.props.theme.foregroundGreen,
-            colorPrimaryBorder: this.props.theme.backgroundGreen,
-            colorPrimaryBorderHover: this.props.theme.backgroundGreen,
-          }
-        }}>
-        <div className="fanBut">
-          <div className="fanSwitch">
-            <Switch checked={this.props.state} onChange={this.props.onStateChange} />
-          </div>
-          <div className="slider">
-            <Slider
+  const onModeChange = (e) => {
+    props.onModeChange(e.target.value)
+  }
+  const setFanOpe = (e) => {
+    props.onStateChange(e.target.checked);
+  }
+
+  return (
+    <div className="fanBut">
+      <div className="fanSwitch">
+        {/* <Switch checked={this.props.state} onChange={this.props.onStateChange} /> */}
+        <Switch checked={props.state} onChange={setFanOpe} color={props.color} />
+      </div>
+      {/* <div className="slider"> */}
+      {/* <Slider
               min={0}
               max={this.props.modes.length - 1}
-              onChange={this.props.onModeChange}
               value={this.props.value}
               open={false}
               included={false}
@@ -40,12 +41,26 @@ class FanControl extends Component {
               tooltip={{ formatter: this.getMode}}
               disabled={!this.props.state}
               marks={marks}
-            />
-          </div>
-        </div>
-      </ConfigProvider >
-    );
-  }
+            /> */}
+      <Box sx={{ width: 180, display: "flex" }}>
+        <Slider
+          // aria-label="Temperature"
+          color={props.color}
+          onChange={onModeChange}
+          // width={100}
+          defaultValue={props.value}
+          // getAriaValueText={valuetext}
+          valueLabelFormat={getMode}
+          valueLabelDisplay="auto"
+          step={1}
+          // marks={modes}
+          min={0}
+          max={3}
+        />
+      </Box>
+    </div>
+    // </div>
+  );
 }
 
 export default FanControl;

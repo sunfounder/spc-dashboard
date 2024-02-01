@@ -1,10 +1,11 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.js', // 项目的入口文件
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'), // 打包输出的目录
+    filename: 'bundle.js', // 打包输出的文件名
+    publicPath: './', // 打包后的文件会默认放在静态目录下，通过publicPath来修改静态资源的访问路径
   },
   module: {
     rules: [

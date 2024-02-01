@@ -1,362 +1,359 @@
-import React, { Component } from 'react';
-import Card from './card.jsx';
-import ToggleSwitch from './toggleSwitch.jsx';
-import FanControl from './fanControl.jsx';
-import { firstUpperCase } from '../js/utils';
-
+import React, { useState, useEffect } from 'react';
+import SettingPage from './settingPage.jsx';
+import Snackbars from './snackbar.jsx';
+import { formatBytes } from '../js/utils';
+// import { Switch } from '@mui/material'
+// import Chart from './chart.jsx';
+// import BarChart from './barChart.jsx';
+// import { Box } from '@mui/material';
 import "./home.css";
 
+import ExternalInput from './externalInput.jsx';
+import FanCard from './fanCard.jsx';
+import BatteryCard from './batteryCard.jsx';
+import RaspberryPiPower from './raspberryPiPower.jsx';
+import StorageCard from './storageCard.jsx';
+import MemoryCard from './memoryCard.jsx';
+import ProcessorCard from './processorCard.jsx';
+import NetworkCard from './networkCard.jsx';
 const ip = window.location.hostname;
-const HOST = `http://${ip}:34001/api/v1.0/`;
-// const HOST = `http://192.168.18.17:34001/api/v1.0/`;
+// const HOST = `http://${ip}:34001/api/v1.0/`;
+// const HOST = `http://192.168.137.6:34001/api/v1.0/`;
+const HOST = `http://192.168.100.222:34001/api/v1.0/`;
+// const HOST = `http://homeassistant.local:34001/api/v1.0/`;
 
-const BOARDS = [
-  "UPS Case",
-  "Pironman",
+const PRODUCT = [
+  {
+    'name': 'Pironman U1',
+    'id': 'pironman_u1',
+    "address": 0x00,
+    "peripherals": [
+      'battery',
+      'usb_in',
+      'output',
+      'fan',
+      'power_source_sensor',
+      'ir',
+    ],
+  },
+  {
+    'name': 'Pironman 4',
+    'id': 'pironman_4',
+    "address": 0x01,
+    "peripherals": [
+      'usb_in',
+      'fan',
+      'oled',
+      'ws2812', // RGB
+      'ir',
+    ],
+  }
 ]
 
-const POWER_SOURCE = [
-  "USB",
-  "Battery",
-]
-
-
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.updateInterval = null;
-    this.state = {
-      details: {
-        usb: {
-          isPluggedIn: {
-            title: "Status",
-            unit: "",
-            chart: false,
-          },
-          voltage: {
-            title: "Voltage",
-            unit: "V",
-            color: props.theme.foregroundGreen,
-            chart: true,
-          },
-          current: {
-            title: "Current",
-            unit: "A",
-            color: props.theme.foregroundBlue,
-            chart: true,
-          },
-          power: {
-            title: "Power",
-            unit: "W",
-            color: props.theme.foregroundYellow,
-            chart: true,
-          }
-        },
-        fan: {
-          state: {
-            title: "State",
-            unit: "",
-            chart: false,
-          },
-          mode: {
-            title: "Mode",
-            unit: "",
-            chart: false,
-          },
-          speed: {
-            title: "Percentage",
-            unit: "%",
-            chart: false,
-          },
-          cpu_temperature: {
-            title: "Temperature",
-            unit: "℃",
-            color: props.theme.foregroundRed,
-            chart: true,
-            min: 0,
-            max: 100,
-          },
-        },
-        rpi: {
-        },
-        battery: {
-          percentage: {
-            title: "Percentage",
-            unit: "%",
-            chart: false,
-          },
-          isCharging: {
-            title: "Charging",
-            unit: "",
-            chart: false,
-          },
-          voltage: {
-            title: "Voltage",
-            unit: "V",
-            color: props.theme.foregroundGreen,
-            chart: true,
-          },
-          current: {
-            title: "Current",
-            unit: "A",
-            color: props.theme.foregroundBlue,
-            chart: true,
-          },
-          power: {
-            title: "Power",
-            unit: "W",
-            color: props.theme.foregroundYellow,
-            chart: true,
-          }
-        },
-        output: {
-          source: {
-            title: "Output Source",
-            unit: "",
-            chart: false,
-          },
-          voltage: {
-            title: "Voltage",
-            unit: "V",
-            color: props.theme.foregroundGreen,
-            chart: true,
-          },
-          current: {
-            title: "Current",
-            unit: "A",
-            color: props.theme.foregroundBlue,
-            chart: true,
-          },
-          power: {
-            title: "Power",
-            unit: "W",
-            color: props.theme.foregroundYellow,
-            chart: true,
-          }
-        }
-      },
-      datas: {
-        usb: {
-          timestamp: null,
-          isPluggedIn: "Unplugged",
-          voltage: -1,
-          current: -1,
-        },
-        fan: {
-          timestamp: null,
-          state: null,
-          mode: null,
-          speed: -1,
-          cpu_temperature: -1,
-        },
-        rpi: {
-          timestamp: null,
-          cpu_usage: 0,
-          cpu_temperature: 0,
-        },
-        battery: {
-          timestamp: null,
-          voltage: -1,
-          current: -1,
-          isCharging: null,
-          percentage: -1,
-        },
-        output: {
-          timestamp: null,
-          voltage: -1,
-          current: -1,
-        },
-      },
-      themeSwitchChecked: false,
-      fanMode: "Auto",
-      fanState: false,
-      fanModeIndex: 3,
-      boardName: ''
-    }
-    this.fanModes = [
-      'quiet',
-      'normal',
-      'performance',
-      'auto',
-    ];
-  }
-  componentDidMount() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-    this.updateInterval = setInterval(this.updateDate, 1000);
-    let isDark = window.localStorage.getItem("isDark") || "true";
-    isDark = isDark === "true";
-    this.themeSwitching(isDark);
-
-  }
-  updateDate = async () => {
-    // console.log("updateDate")
-    let respond = await fetch(HOST + "get-all");
-    let data = await respond.json();
-    data = data.data;
-    let timestamp = new Date();
-    timestamp = timestamp.toUTCString();
-    let newDatas = {
-      usb: {
-        timestamp: timestamp,
-        isPluggedIn: data.is_usb_plugged_in  ? "Plugged in" : "Unplugged",
-        voltage: data.usb_voltage / 1000,
-        current: data.usb_current / 1000,
-        power: data.usb_voltage / 1000 * data.usb_current / 1000,
-      },
-      fan: {
-        timestamp: timestamp,
-        state: data.fan_state  ? "ON" : "OFF",
-        mode: firstUpperCase(data.fan_mode),
-        speed: data.fan_speed,
-        cpu_temperature: data.cpu_temperature,
-      },
-      rpi: {
-        timestamp: timestamp,
-        // cpu_usage: data.,
-        // cpu_temperature: data.,
-      },
-      battery: {
-        timestamp: timestamp,
-        percentage: data.battery_percentage,
-        isCharging: data.is_charging  ? "Charging" : "Not charging",
-        voltage: data.battery_voltage / 1000,
-        current: data.battery_current / 1000,
-        power: data.battery_voltage / 1000 * data.battery_current / 1000,
-      },
-      output: {
-        timestamp: timestamp,
-        source: POWER_SOURCE[data.power_source],
-        voltage: data.output_voltage / 1000,
-        current: data.output_current / 1000,
-        power: data.output_voltage / 1000 * data.output_current / 1000,
-      },
-    };
-    this.setState({
-      datas: newDatas,
-      fanMode: firstUpperCase(data.fan_mode),
-      fanState: data.fan_state,
-      fanModeIndex: this.fanModes.indexOf(data.fan_mode),
-      boardName: BOARDS[data.board_id],
-    })
-  }
-  themeSwitching = (checked) => {
-    if (checked) {
-      this.props.onModeChange("dark");
-    } else {
-      this.props.onModeChange("light");
-    }
-    this.setState({
-      themeSwitchChecked: checked,
-    })
-    window.localStorage.setItem("isDark", checked);
-  };
-
-  sendData = async (path, data) => {
-    let payload = { data: data }
-    await fetch(HOST + path, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-  }
-  setFanMode = async (mode) => {
-    await this.sendData("set-fan-mode", mode);
-  }
-  setFanState = async (state) => {
-    await this.sendData("set-fan-state", state);
-  }
-  onFanModeChange = (index) => {
-    let mode = this.fanModes[index];
-    this.setFanMode(mode);
-    this.setState({
-      fanModeIndex: index,
-      fanMode: firstUpperCase(mode),
-    });
-  }
-  onFanStateChange = (checked) => {
-    this.setFanState(checked);
-    this.setState({ fanState: checked });
-  };
-  render() {
-    return (
-      <div className="home" style={{
-        backgroundColor: this.props.theme.homeBackgroundColor,
-        color: this.props.theme.primary
-      }}>
-        <div className="titleBar">
-          <div className="homeTitle" >
-            {this.state.boardName}
-          </div>
-          <div className="themeSwitch">
-            <span>Dark mode</span>
-            <ToggleSwitch state={this.state.themeSwitchChecked} onChange={this.themeSwitching} />
-          </div>
-        </div>
-        <div className="cardBox">
-          <Card
-            title="USB"
-            theme={this.props.theme}
-            width={4}
-            data={this.state.datas.usb}
-            details={this.state.details.usb}
-            iconBoxColor={this.props.theme.backgroundBlue}
-            icon={<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 640 512" fill={this.props.theme.svgBackgroundColor} ><path d="M641.5 256c0 3.1-1.7 6.1-4.5 7.5L547.9 317c-1.4.8-2.8 1.4-4.5 1.4-1.4 0-3.1-.3-4.5-1.1-2.8-1.7-4.5-4.5-4.5-7.8v-35.6H295.7c25.3 39.6 40.5 106.9 69.6 106.9H392V354c0-5 3.9-8.9 8.9-8.9H490c5 0 8.9 3.9 8.9 8.9v89.1c0 5-3.9 8.9-8.9 8.9h-89.1c-5 0-8.9-3.9-8.9-8.9v-26.7h-26.7c-75.4 0-81.1-142.5-124.7-142.5H140.3c-8.1 30.6-35.9 53.5-69 53.5C32 327.3 0 295.3 0 256s32-71.3 71.3-71.3c33.1 0 61 22.8 69 53.5 39.1 0 43.9 9.5 74.6-60.4C255 88.7 273 95.7 323.8 95.7c7.5-20.9 27-35.6 50.4-35.6 29.5 0 53.5 23.9 53.5 53.5s-23.9 53.5-53.5 53.5c-23.4 0-42.9-14.8-50.4-35.6H294c-29.1 0-44.3 67.4-69.6 106.9h310.1v-35.6c0-3.3 1.7-6.1 4.5-7.8 2.8-1.7 6.4-1.4 8.9.3l89.1 53.5c2.8 1.1 4.5 4.1 4.5 7.2z" /></svg>}
-          />
-          <Card
-            title="Fan"
-            theme={this.props.theme}
-            width={4}
-            data={this.state.datas.fan}
-            details={this.state.details.fan}
-            iconBoxColor={this.props.theme.backgroundGreen}
-            icon={<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512" fill={this.props.theme.svgBackgroundColor}><path d="M258.6 0c-1.7 0-3.4 .1-5.1 .5C168 17 115.6 102.3 130.5 189.3c2.9 17 8.4 32.9 15.9 47.4L32 224H29.4C13.2 224 0 237.2 0 253.4c0 1.7 .1 3.4 .5 5.1C17 344 102.3 396.4 189.3 381.5c17-2.9 32.9-8.4 47.4-15.9L224 480v2.6c0 16.2 13.2 29.4 29.4 29.4c1.7 0 3.4-.1 5.1-.5C344 495 396.4 409.7 381.5 322.7c-2.9-17-8.4-32.9-15.9-47.4L480 288h2.6c16.2 0 29.4-13.2 29.4-29.4c0-1.7-.1-3.4-.5-5.1C495 168 409.7 115.6 322.7 130.5c-17 2.9-32.9 8.4-47.4 15.9L288 32V29.4C288 13.2 274.8 0 258.6 0zM256 224a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" /></svg>}
-          >
-            <FanControl
-              theme={this.props.theme}
-              state={this.state.fanState}
-              value={this.state.fanModeIndex}
-              onModeChange={this.onFanModeChange}
-              onStateChange={this.onFanStateChange}
-              modes={this.fanModes}
-            />
-          </Card>
-          {/* <Card
-            title="Raspberry Pi"
-            theme={this.props.theme}
-            width={4}
-            data={this.state.datas.rpi}
-            details={this.state.details.rpi}
-            iconBoxColor={this.props.theme.backgroundRed}
-            icon={<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512" fill={this.props.theme.svgBackgroundColor}><path d="M176 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64c-35.3 0-64 28.7-64 64H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v56H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v56H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64c0 35.3 28.7 64 64 64v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h56v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h56v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448c35.3 0 64-28.7 64-64h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V280h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V176h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448c0-35.3-28.7-64-64-64V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H280V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H176V24zM160 128H352c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H160c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm192 32H160V352H352V160z" /></svg>}
-          /> */}
-
-          <Card
-            title="Battery"
-            theme={this.props.theme}
-            width={4}
-            data={this.state.datas.battery}
-            details={this.state.details.battery}
-            iconBoxColor={this.props.theme.backgroundPurple}
-            icon={<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 576 512" fill={this.props.theme.svgBackgroundColor}><path d="M464 160c8.8 0 16 7.2 16 16V336c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16H464zM80 96C35.8 96 0 131.8 0 176V336c0 44.2 35.8 80 80 80H464c44.2 0 80-35.8 80-80V320c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32V176c0-44.2-35.8-80-80-80H80zm272 96H96V320H352V192z" /></svg>}
-          />
-
-          <Card
-            title="Output"
-            theme={this.props.theme}
-            width={4}
-            data={this.state.datas.output}
-            details={this.state.details.output}
-            iconBoxColor={this.props.theme.backgroundYellow}
-            icon={<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512" fill={this.props.theme.svgBackgroundColor}><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" /></svg>}
-          />
-        </div>
-      </div >
-    )
-  }
+const defaultConfigData = {
+  "auto": {
+    "reflash_interval": 1, //刷新间隔
+    "retry_interval": 3, //刷新
+    "fan_mode": "auto",
+    "fan_state": true,
+    "fan_speed": 65,
+    "temperature_unit": "C",
+    "rgb_switch": true,
+    "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
+    "rgb_color": "#0a1aff",
+    "rgb_speed": 50, //速度
+    "rgb_pwm_frequency": 1000, //频率
+    "rgb_pin": 10,  // 10,12,21
+    "shutdown_battery_pct": 100
+  },
+  "mqtt": {
+    "host": "core-mosquitto",
+    "port": 1883,
+    "username": "mqtt",
+    "password": "mqtt"
+  },
+  "dashboard": {
+    "ssl": false,
+    "ssl_ca_cert": "",
+    "ssl_cert": ""
+  },
 }
 
+const Home = (props) => {
+  const [datas, setDatas] = useState([]);
+  const [themeSwitchChecked, setThemeSwitchChecked] = useState(false);
+  // const [fanMode, setFanMode] = useState("Auto");
+  const [boardName, setBoardName] = useState('');
+  const [connectionState, setConnectionState] = useState(true);
+  //设置页面的显示状态
+  const [settingPageDisplay, setSettingPageDisplay] = useState(false);
+  const [peripherals, setPeripherals] = useState([])
+  const [configData, setConfigData] = useState(defaultConfigData);
+  const [updateDataInterval, setUpdateDataInterval] = useState(1000);
+  //全局提示框显示内容
+  const [snackbarText, setSnackbarText] = useState("设置成功 ！");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  //全局提示框显示状态
+  const [snackbarShow, setSnackbarShow] = useState(false);
+  //对话框的显示状态
+  // const [basicDialogShow, setBasicDialogShow] = useState(false); 
+  //是否加载状态
+  // const [loading, setLoading] = useState(false);  
+  //对话框显示内容
+  // const [basicDialogText, setBasicDialogText] = useState("修改成功");  
+  useEffect(() => {
+    // 发送请求
+    getConfig();
+  }, []);
+
+  const handleSettingPage = () => {
+    setSettingPageDisplay(!settingPageDisplay);
+  }
+
+  const showSnackBar = (severity, text) => {
+    setSnackbarText(text);
+    setSnackbarSeverity(severity);
+    setSnackbarShow(true);
+  }
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarShow(false);
+    setSnackbarText("");
+  }
+
+  const handleCancel = () => {
+    setSettingPageDisplay(false);
+  }
+
+  const handleSaveConfig = async () => {
+    // setBasicDialogShow(true);
+    console.log("set-config-data", configData);
+    // 判断是否发送设置数据
+    let responseData = await sendData("set-config", configData);
+    console.log(responseData)
+    if (responseData.status) {
+      showSnackBar("success", "Save Successfully");
+      setSettingPageDisplay(false);
+    }
+  }
+
+  // 发送请求
+  useEffect(() => {
+    // updateDate();
+    const interval = setInterval(() => {
+      if (connectionState) updateDate();
+    }, updateDataInterval);
+    return () => clearInterval(interval);
+  }, []);
+
+  // const sendData = async (path, data) => {
+  //   let payload = { data: data }
+  //   await fetch(HOST + path, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(payload),
+  //   });
+  // }
+
+  const sendData = async (path, data) => {
+    let payload = { data: data };
+    console.log("sendData", payload)
+    try {
+      const response = await fetch(HOST + path, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // 确保请求成功
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const responseData = await response.json();
+      console.log("服务器返回的结果：", responseData);
+
+      return responseData;
+    } catch (error) {
+      console.error("发生错误：", error);
+    }
+  }
+
+
+  const getRequest = async (url, payload) => {
+    try {
+      if (payload !== undefined) {
+        // Convert object to url param string
+        const params = new URLSearchParams(payload);
+        url += `?${params}`;
+      }
+      url = HOST + url;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        console.error(`Request failed with status ${response.status}`);
+        showSnackBar("error", `Request Error: ${response.status}`);
+        setConnectionState(false);
+        return false;
+      }
+      const result = await response.json();
+      const status = result.status;
+      if (status) {
+        const data = result.data;
+        setConnectionState(true);
+        return data;
+      } else {
+        console.error(`Error: ${result.error}`);
+        showSnackBar("error", `Error: ${result.error}`);
+        setConnectionState(false);
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      showSnackBar("error", `Request Error: ${error}`);
+      setConnectionState(false);
+      return false;
+    }
+  }
+  const makeRequest = async (url, method, payload) => {
+    try {
+      const requestOptions = {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // 将 payload 转换为 JSON 字符串，并将其添加到请求体中
+        body: method === 'POST' ? JSON.stringify(payload) : undefined,
+      };
+
+      if (method === 'GET' && payload !== undefined) {
+        // 如果是 GET 请求，将 payload 转换为 URL 参数字符串，并附加到 URL 上
+        const params = new URLSearchParams(payload);
+        url += `?${params}`;
+      }
+      const response = await fetch(HOST + url, requestOptions);
+
+      if (!response.ok) {
+        console.error(`Request failed with status ${response.status}`);
+        showSnackBar("error", `Request Error: ${response.status}`);
+        setConnectionState(false);
+        return false;
+      }
+
+      const result = await response.json();
+      const status = result.status;
+
+      if (status) {
+        const data = result.data;
+        setConnectionState(true);
+        return data;
+      } else {
+        console.error(`Error: ${result.error}`);
+        showSnackBar("error", `Error: ${result.error}`);
+        setConnectionState(false);
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      showSnackBar("error", `Request Error: ${error}`);
+      setConnectionState(false);
+      return false;
+    }
+  };
+  const getConfig = async () => {
+    // let respond = await fetch(HOST + "get-config");
+    // let data = await respond.json();
+    let data = await makeRequest("get-config", "GET");
+    console.log("getConfig", data);
+    if (data) setConfigData(data);
+  }
+
+  const handleChangeConfig = (field, name, value) => {
+    let newData = { ...configData };
+    newData[field][name] = value;
+    setConfigData(newData);
+    console.log("handleChangeConfig", configData)
+  };
+
+  const updateDate = async () => {
+    // let respond = await fetch(HOST + "get-all");
+    // let data = await respond.json();
+    // let respond = await fetch(HOST + "get-history?n=20");
+    // let data = await getRequest("get-history?n=20");
+    let data = await makeRequest("get-history?n=20", "GET");
+    console.log("data", data)
+    if (!data) {
+      setUpdateDataInterval(10000);
+      // setRequestStatus(true);
+    } else {
+      setUpdateDataInterval(1000);
+      let newDatas = data.reverse();
+      setBoardName(newDatas[0].board_name);
+      let id = newDatas[0].board_id;
+      if (id !== null && id !== undefined) setPeripherals(PRODUCT[id].peripherals)
+      setDatas(newDatas);
+    }
+  };
+  const bytesFormatter = (value, name, props) => {
+    let unit = props.unit;
+    if (unit === 'B' || unit === 'B/s') {
+      value = formatBytes(value);
+    } else {
+      if (Array.isArray(value)) return;
+      value = value.toFixed(2);
+      value += ' ';
+    }
+    return value;
+  };
+  return (
+    <div className="home" style={{
+      // backgroundColor: props.theme.homeBackgroundColor,
+      color: props.theme.primary
+    }}>
+      <div className="titleBar">
+        <div className="homeTitle" >
+          {boardName}
+        </div>
+        <div className="themeSwitch">
+          <div className='settingIcon' onClick={handleSettingPage}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill={props.theme.primary} height="1.5rem" viewBox="0 0 512 512"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" /></svg>
+          </div>
+        </div>
+      </div>
+      <div className="cardBox">
+        {peripherals.includes('usb_in') && <ExternalInput theme={props.theme} data={datas} bytesFormatter={bytesFormatter} />}
+        {peripherals.includes('fan') && <FanCard theme={props.theme} data={datas} makeRequest={makeRequest} />}
+        {peripherals.includes('battery') && <BatteryCard theme={props.theme} data={datas} />}
+        {peripherals.includes('output') && <RaspberryPiPower theme={props.theme} data={datas} />}
+
+        <StorageCard theme={props.theme} data={datas} />
+        <MemoryCard theme={props.theme} data={datas} />
+        <NetworkCard theme={props.theme} data={datas} />
+        <ProcessorCard theme={props.theme} data={datas} />
+      </div>
+      <SettingPage
+        open={settingPageDisplay}
+        onCancel={handleCancel}
+        onSave={handleSaveConfig}
+        onChange={handleChangeConfig}
+        onModeChange={props.onModeChange}
+        configData={configData}
+        peripherals={peripherals}
+        getRequest={getRequest}
+      />
+      <Snackbars
+        open={snackbarShow}
+        text={snackbarText}
+        severity={snackbarSeverity}
+        handleClose={handleSnackbarClose}
+      />
+    </div >
+  );
+};
 export default Home;
