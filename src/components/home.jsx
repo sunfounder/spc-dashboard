@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react';
 import SettingPage from './settingPage.jsx';
 import Snackbars from './snackbar.jsx';
 import { formatBytes } from '../js/utils';
-// import { Switch } from '@mui/material'
-// import Chart from './chart.jsx';
-// import BarChart from './barChart.jsx';
-// import { Box } from '@mui/material';
 import "./home.css";
 
 import ExternalInput from './externalInput.jsx';
@@ -17,9 +13,8 @@ import MemoryCard from './memoryCard.jsx';
 import ProcessorCard from './processorCard.jsx';
 import NetworkCard from './networkCard.jsx';
 const ip = window.location.hostname;
-// const HOST = `http://${ip}:34001/api/v1.0/`;
-// const HOST = `http://192.168.137.6:34001/api/v1.0/`;
-const HOST = `http://192.168.100.222:34001/api/v1.0/`;
+const HOST = `http://${ip}:34001/api/v1.0/`;
+// const HOST = `http://192.168.100.222:34001/api/v1.0/`;
 // const HOST = `http://homeassistant.local:34001/api/v1.0/`;
 
 const PRODUCT = [

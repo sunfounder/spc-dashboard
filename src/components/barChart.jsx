@@ -39,9 +39,9 @@ const BarChart = (props) => {
               onMouseEnter={(event) => handleMouseEnter(index, event)}
               onMouseLeave={handleMouseLeave}
             >
-              <Box className='barUsed' sx={{ width: `${item.percent}%`, bgcolor: `${props.color}.main` }}></Box>
+              <Paper className='barUsed' elevation={5} sx={{ width: `${item.percent}%`, bgcolor: `${props.color}.main` }}></Paper>
               {/* 中间空隙占2% */}
-              <Box className='barFree' sx={{ width: `${100 - item.percent - 2}%` }}></Box>
+              <Paper className='barFree' theme={theme} elevation={5} sx={{ width: `${100 - item.percent - 2}%`, }}></Paper>
             </div>
           ))}
         </div>
