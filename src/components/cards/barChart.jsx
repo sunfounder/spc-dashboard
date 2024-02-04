@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Graph from './graph.jsx';
-import { formatBytes } from '../js/utils';
-import { Paper, Box, Typography } from '@mui/material';
+import { formatBytes } from '../../js/utils.js';
+import { Paper, Typography } from '@mui/material';
 import "./barChart.css"
 
 

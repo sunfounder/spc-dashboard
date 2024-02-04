@@ -1,6 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { formatBytes } from '../js/utils';
+import { formatBytes } from '../../js/utils.js';
 import Graph from './graph.jsx';
 
 const Chart = (props) => {
@@ -16,7 +16,6 @@ const Chart = (props) => {
     }
     return value;
   };
-  // console.log(props)
   return <Graph theme={theme} processorChartAmount={processorChartAmount}>
     <ResponsiveContainer width="100%" height="100%">
       <LineChart width={600} height={300} data={props.data}>
@@ -38,23 +37,6 @@ const Chart = (props) => {
           return undefined;
         })}
 
-        {/* {Object.keys(detail).map((key, index) => {
-          return (
-            <Line
-              type="monotone"
-              dataKey={key}
-              key={index}
-              stroke={detail[key].color}
-              name={detail[key].title}
-              unit={detail[key].unit}
-              strokeWidth={3}
-              isAnimationActive={false}
-              connectNulls={true}
-              animationEasing="linear"
-              dot={false}
-            />
-          );
-        })} */}
         {Object.keys(detail).map((key, index) => {
           // if (detail[key].chart) {
           return (
@@ -72,8 +54,6 @@ const Chart = (props) => {
               dot={false}
             />
           );
-          // }
-          return undefined;
         })}
       </LineChart>
     </ResponsiveContainer>

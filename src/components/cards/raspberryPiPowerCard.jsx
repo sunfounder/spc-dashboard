@@ -2,13 +2,13 @@ import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
 import { Box } from '@mui/material';
-import { timeFormatting } from '../js/utils';
+import { timeFormatting } from '../../js/utils.js';
 
 const POWER_SOURCE = [
   "External",
   "Battery",
 ]
-const RaspberryPiPower = (props) => {
+const RaspberryPiPowerCard = (props) => {
   const detail = {
     source: {
       title: "Source",
@@ -78,4 +78,4 @@ const RaspberryPiPower = (props) => {
   )
 }
 
-export default RaspberryPiPower;
+export default RaspberryPiPowerCard;

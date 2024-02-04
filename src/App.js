@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
-import RouterView from './router/index';
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Home from "./components/home";
 import {
   green,
   indigo,
@@ -95,6 +95,7 @@ const darkTheme = createTheme({
       styleOverrides: `
       ::-webkit-scrollbar {
         width: 10px;
+        height: 10px;
       }
       ::-webkit-scrollbar-track {
         background-color: rgb(60, 60, 60);
@@ -143,6 +144,7 @@ const lightTheme = createTheme({
       styleOverrides: `
         ::-webkit-scrollbar {
           width: 10px;
+          height: 10px;
         }
         ::-webkit-scrollbar-track {
           background-color: rgb(240, 240, 240);
@@ -181,7 +183,7 @@ const App = () => {
     <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <div className='app'>
-        <RouterView onModeChange={changeTheme} theme={theme} />
+        <Home onModeChange={changeTheme} theme={theme} />
       </div>
     </ThemeProvider>
   );

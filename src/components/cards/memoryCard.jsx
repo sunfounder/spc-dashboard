@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
-import { timeFormatting } from '../js/utils';
+import { timeFormatting } from '../../js/utils.js';
 
 const MemoryCard = (props) => {
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import { formatBytes, round } from '../js/utils';
+import { formatBytes, round } from '../../js/utils';
 import Paper from '@mui/material/Paper';
 import "./card.css";
 
 const Card = (props) => {
-  const { iconBoxColor, icon, theme, width, details, title, data, chart, config } = props;
+  const { icon, width, details, title, data, chart, config } = props;
   return (
     <Paper className="card"
       // variant="outlined"

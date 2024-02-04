@@ -1,5 +1,6 @@
 /* @import 'antd/dist/antd.css'; */
-:root{
-  --bagcolor:black;
-  --wbagcolor:white;
+.app {
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
 }

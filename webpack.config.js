@@ -37,7 +37,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@components': path.resolve(__dirname, 'src/components'),
+      '@components': path.resolve(__dirname, 'src/components/'),
+      '@js': path.resolve(__dirname, 'src/js'),
     },
   },
   mode: 'development', //开发模式，会保留源代码的映射文件，production生产模式

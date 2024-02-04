@@ -3,7 +3,7 @@ import React from "react"
 // import { Switch, ConfigProvider } from 'antd';
 import { Box, Slider, Switch } from '@mui/material';
 import './fanControl.css'
-import { firstUpperCase } from '../js/utils';
+import { firstUpperCase } from '../../js/utils';
 const FanControl = (props) => {
   const modes = props.modes.map((mode, index) => {
     return {

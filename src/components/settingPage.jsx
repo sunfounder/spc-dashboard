@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import "./settingPage.css";
 import {
   Paper,
@@ -32,8 +32,6 @@ import {
   Close,
   Check,
 } from '@mui/icons-material';
-// import  from '@mui/icons-material/Close';
-// import Check from '@mui/icons-material/Check';
 
 const SettingPage = (props) => {
   const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("SPCTheme") === "dark" ? true : false);
@@ -75,8 +73,7 @@ const SettingPage = (props) => {
   const handleTest = async () => {
     let sendData = props.configData.mqtt;
     setMqttTestState("loading");
-    console.log(props.getRequest);
-    let data = await props.getRequest("test-mqtt", sendData);
+    let data = await props.request("test-mqtt", "GET", sendData);
     if (data && data.status) {
       setMqttTestState("success");
     } else {

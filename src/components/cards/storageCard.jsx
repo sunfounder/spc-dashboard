@@ -1,30 +1,10 @@
 import React from 'react';
 import Card from './card.jsx';
 import BarChart from './barChart.jsx';
-import { timeFormatting } from '../js/utils';
+import { timeFormatting } from '../../js/utils.js';
 
 const StorageCard = (props) => {
   let detail = {
-    // mmcblk0: {
-    //   title: "mmcblk0",
-    //   unit: "",
-    // }
-    // size: {
-    //   title: "size",
-    //   unit: "B",
-    // },
-    // used: {
-    //   title: "used",
-    //   unit: "B",
-    // },
-    // free: {
-    //   title: "free",
-    //   unit: "B",
-    // },
-    // percent: {
-    //   title: "percent",
-    //   unit: "%",
-    // },
   };
   let newData = [];
   let storageCardData = null;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import Graph from './graph';
+import Graph from '../graph';
 
 const MAX_DATA_POINT = 20;
 

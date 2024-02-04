@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
 import FanControl from './fanControl.jsx';
-import { timeFormatting, firstUpperCase } from '../js/utils';
+import { timeFormatting, firstUpperCase } from '../../js/utils.js';
 
 const FanCard = (props) => {
   let fanModeValue = 0;
@@ -12,31 +12,23 @@ const FanCard = (props) => {
     'performance',
     'auto',
   ];
-  let fanModesData = props.data[props.data.length - 1].fan_mode;
-  fanModeValue = fanModes.indexOf(fanModesData);
+  if (props.data.length > 0) {
+    let fanModesData = props.data[props.data.length - 1].fan_mode;
+    fanModeValue = fanModes.indexOf(fanModesData);
+  }
   const [fanState, setFanState] = useState(false);
-  const [configData, setConfigData] = useState(null);
 
   const sendFanMode = async (mode) => {
     let payload = { data: mode }
     // await sendData("set-fan-mode", mode);
-    await props.makeRequest("set-fan-mode", "POST", payload);
+    await props.request("set-fan-mode", "POST", payload);
   }
   const sendFanState = async (state) => {
     let payload = { data: state }
     // await sendData("set-fan-state", state);
-    await props.makeRequest("set-fan-state", "POST", payload);
+    await props.request("set-fan-state", "POST", payload);
   }
-  // 发送请求
-  useEffect(() => {
-    getConfig();
-  }, []);
-  const getConfig = async () => {
-    // let respond = await fetch(HOST + "get-config");
-    // let data = await respond.json();
-    let data = await props.makeRequest("get-config", "GET");
-    setConfigData(data.data)
-  }
+
   // 设置风扇模式
   const handleFanModeChange = (index) => {
     let mode = fanModes[index];
@@ -67,7 +59,7 @@ const FanCard = (props) => {
     },
     cpu_temperature: {
       title: "Temperature",
-      unit: configData ? (configData.all.temperature_unit == "C" ? "℃" : "℉") : "℃",
+      unit: props.unit ? (props.unit === "C" ? "℃" : "℉") : "℃",
       color: props.theme.foregroundRed,
       min: 0,
       max: 100,

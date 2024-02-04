@@ -1,9 +1,9 @@
 import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
-import { timeFormatting } from '../js/utils';
+import { timeFormatting } from '../../js/utils.js';
 
-const ExternalInput = (props) => {
+const ExternalInputCard = (props) => {
   const detail = {
     isPluggedIn: {
       title: "Status",
@@ -50,4 +50,4 @@ const ExternalInput = (props) => {
   )
 }
 
-export default ExternalInput;
+export default ExternalInputCard;
