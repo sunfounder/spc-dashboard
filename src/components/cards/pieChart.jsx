@@ -8,7 +8,7 @@ const Chart = (props) => {
   const [chartDatas, setChartDatas] = useState([]);
   const [radius, setRadius] = useState({ innerRadius: 50, outerRadius: 100 })
   const [timestamp, setTimestamp] = useState(null);
-  const { theme, data, chartNumber, processorChartAmount } = props;
+  const { data, chartNumber, processorChartAmount } = props;
 
   useEffect(() => {
     let chartElement = document.getElementsByClassName("chart")[0].offsetWidth;
@@ -49,7 +49,7 @@ const Chart = (props) => {
     );
   };
   const COLORS = ['#0088FE', '#00C49F'];
-  return <Graph theme={theme} chartNumber={chartNumber} processorChartAmount={processorChartAmount} >
+  return <Graph chartNumber={chartNumber} processorChartAmount={processorChartAmount} >
     <ResponsiveContainer width="100%" height="100%">
       <PieChart width={400} height={400}>
         <Pie

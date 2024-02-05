@@ -6,8 +6,10 @@ import {
   Typography,
 } from '@mui/material'
 import { timeFormatting } from '../../js/utils.js';
+import { useTheme } from '@mui/material/styles';
 
 const ProcessorCard = (props) => {
+  const theme = useTheme();
   const detail = {
     cores: {
       title: "Cores",
@@ -16,11 +18,10 @@ const ProcessorCard = (props) => {
     frequency: {
       title: "Frequency",
       unit: "GHz",
-      // color: props.theme.foregroundYellow,
     },
     cpuUsage: {
       title: "CPU Usage",
-      color: props.theme.foregroundYellow,
+      color: theme.palette.processor.main,
       unit: "%",
       min: 0,
       max: 100,
@@ -43,7 +44,7 @@ const ProcessorCard = (props) => {
       title: cpuPercentKey,
       unit: "%",
       hide: true,  //表示在卡片上只显示图表不显示文字信息
-      color: props.theme.foregroundYellow,
+      color: theme.palette.processor.main,
       min: 0,
       max: 100,
     };
@@ -85,7 +86,6 @@ const ProcessorCard = (props) => {
     <Card
       color="processor"
       title="Processor"
-      theme={props.theme}
       width={4}
       data={newData}
       details={detail}
@@ -94,12 +94,12 @@ const ProcessorCard = (props) => {
           <div className='multipleChartsBox'>
             <div className='chartBos' style={{ gridTemplateColumns: chartNumber === 2 ? "repeat(2, 1fr)" : `repeat(${chartNumber / 2}, 1fr)` }}>
               {Object.values(newDataList).map((value, index) => (
-                <Chart key={index} theme={props.theme} detail={detail} data={value} processorChartAmount={processorChartAmount} />
+                <Chart key={index} detail={detail} data={value} />
               ))}
             </div>
-          </div> : <Chart theme={props.theme} detail={detail} data={frequencyDtaa} />
+          </div> : <Chart detail={detail} data={frequencyDtaa} />
       }
-      icon={<svg aria-hidden="true" focusable="false" height="2em" fill={props.theme.svgBackgroundColor} data-prefix="fas" data-icon="microchip" class="svg-inline--fa fa-microchip fa-2x " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M176 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64c-35.3 0-64 28.7-64 64H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v56H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v56H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64c0 35.3 28.7 64 64 64v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h56v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h56v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448c35.3 0 64-28.7 64-64h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V280h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V176h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448c0-35.3-28.7-64-64-64V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H280V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H176V24zM160 128H352c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H160c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm192 32H160V352H352V160z"></path></svg>}
+      icon={<svg aria-hidden="true" focusable="false" height="2em" fill={theme.palette.iconFg.main} data-prefix="fas" data-icon="microchip" class="svg-inline--fa fa-microchip fa-2x " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M176 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64c-35.3 0-64 28.7-64 64H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v56H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v56H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64c0 35.3 28.7 64 64 64v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h56v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h56v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448c35.3 0 64-28.7 64-64h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V280h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V176h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448c0-35.3-28.7-64-64-64V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H280V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H176V24zM160 128H352c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H160c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm192 32H160V352H352V160z"></path></svg>}
       config={<div className='processorCores'>
         <Typography>Show All Cores</Typography>
         <Switch checked={processorChartAmount} onChange={handleProcessorChartChange} color="processor" />

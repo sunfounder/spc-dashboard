@@ -11,65 +11,36 @@ import {
   pink,
   blue,
   cyan,
+  red,
+  yellow,
+  grey,
 } from '@mui/material/colors';
 
 import './App.css';
 
-let THEMES = {
-  dark: {
-    name: "dark",
-    primary: "#F0F0F0",
-    homeBackgroundColor: "#3c3c3c",
-    chartBackgroundColor: "#252527",
-    cardBackgroundColor: "#1e1e1e",
-    cardBorder: "1px solid rgba(250, 250, 250, 0.2)",
-    backgroundRed: "rgb(196, 49, 72)",
-    backgroundYellow: "rgb(213 189 32)",
-    backgroundGreen: "rgb(34, 179, 82)",
-    backgroundBlue: "rgb(34, 89, 179)",
-    backgroundPurple: "rgb(107 61 171)",
-    foregroundRed: "rgb(255, 82, 111)",
-    foregroundYellow: "rgb(255, 215, 69)",
-    foregroundLightGreen: "rgb(73, 227, 122)",
-    foregroundGreen: "rgb(73, 227, 122)",
-    foregroundBlue: "rgb(82, 215, 255)",
-    foregroundPurple: "rgb(172 123 239)",
-    svgBackgroundColor: "#FAFAFA",
-    buttonBackgroundColor: "rgba(250, 250, 250, 0.267)",
-    sliderBackgroundColor: "#FAFAFA",
-    sliderHandleBackgroundColor: "rgb(34, 179, 82)"
-  },
-  light: {
-    name: "light",
-    primary: "#333333",
-    homeBackgroundColor: "#ececec",
-    chartBackgroundColor: "#f3f3f3",
-    cardBackgroundColor: "#ffffff",
-    cardBorder: "1px solid rgba(64, 64, 64, 0.2)",
-    backgroundRed: "rgb(255, 82, 111)",
-    backgroundYellow: "rgb(255, 215, 69)",
-    backgroundGreen: "rgb(73, 227, 122)",
-    backgroundBlue: "rgb(82, 215, 255)",
-    backgroundPurple: "rgb(172 123 239)",
-    foregroundRed: "rgb(196, 49, 72)",
-    foregroundYellow: "rgb(213 189 32)",
-    foregroundLightGreen: "rgb(73, 227, 122)",
-    foregroundGreen: "rgb(34, 179, 82)",
-    foregroundBlue: "rgb(34, 89, 179)",
-    foregroundPurple: "rgb(107 61 171)",
-    svgBackgroundColor: "#404040",
-    sliderBackgroundColor: "rgb(243, 243, 243)",
-    sliderHandleBackgroundColor: "rgb(73, 227, 122)"
-  }
-}
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
+    voltage: {
+      main: lightGreen[500],
+    },
+    current: {
+      main: indigo[500],
+    },
+    power: {
+      main: yellow[500],
+    },
+    temperature: {
+      main: red[500],
+    },
     fan: {
       main: green[500],
     },
+    iconFg: {
+      main: grey[900],
+    },
     externalInput: {
-      main: indigo[500],
+      main: indigo[600],
     },
     battery: {
       main: deepPurple[500],
@@ -88,6 +59,8 @@ const darkTheme = createTheme({
     },
     network: {
       main: amber[500],
+      up: green[500],
+      down: blue[500],
     },
   },
   components: {
@@ -114,29 +87,46 @@ const darkTheme = createTheme({
 const lightTheme = createTheme({
   palette: {
     mode: "light",
+    voltage: {
+      main: lightGreen[600],
+    },
+    current: {
+      main: indigo[600],
+    },
+    power: {
+      main: yellow[600],
+    },
+    temperature: {
+      main: red[600],
+    },
+    iconFg: {
+      main: grey[200],
+    },
     externalInput: {
-      main: indigo[100],
+      main: indigo[600],
     },
     fan: {
-      main: green[100],
+      main: green[600],
     },
     battery: {
-      main: deepPurple[100],
+      main: deepPurple[600],
     },
     raspberryPiPower: {
-      main: pink[100],
+      main: pink[600],
     },
     storage: {
-      main: lightGreen[100],
+      main: lightGreen[600],
     },
     memory: {
-      main: cyan[100],
+      main: cyan[600],
     },
     processor: {
-      main: blue[100],
+      main: blue[600],
     },
     network: {
-      main: amber[100],
+      main: amber[600],
+      up: green[600],
+      down: blue[600],
     },
   },
   components: {
@@ -159,31 +149,28 @@ const lightTheme = createTheme({
     },
   },
 });
+
 const App = () => {
   const [theme, setTheme] = useState(null);
-  const [currentTheme, setCurrentTheme] = useState(null);
 
   const changeTheme = (themeName) => {
-    if (Object.keys(THEMES).indexOf(themeName) >= 0) {
-      setTheme(THEMES[themeName]);
-    }
     if (themeName === 'dark')
-      setCurrentTheme(darkTheme);
+      setTheme(darkTheme);
     else
-      setCurrentTheme(lightTheme);
+      setTheme(lightTheme);
   };
 
   if (theme === null) {
-    let _theme = window.localStorage.getItem("SPCTheme");
+    let _theme = window.localStorage.getItem("spc-dashboard-theme");
     if (_theme === null) _theme = "light"; // default theme
     changeTheme(_theme);
   }
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className='app'>
-        <Home onModeChange={changeTheme} theme={theme} />
+        <Home onModeChange={changeTheme} />
       </div>
     </ThemeProvider>
   );

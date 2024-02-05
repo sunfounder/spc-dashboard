@@ -7,18 +7,15 @@ const Card = (props) => {
   const { icon, width, details, title, data, chart, config } = props;
   return (
     <Paper className="card"
-      // variant="outlined"
       color={props.color}
       elevation={2}
       sx={{
         borderRadius: "20px",
         flexGrow: width,
-        // boxShadow: "rgba(47 56 59 / 15%) 2px 2px 12px 0px",
       }}>
       <div className="box">
         <Paper className="icon" elevation={5}
           sx={{
-            // backgroundColor: iconBoxColor,
             bgcolor: `${props.color}.main`
           }}
 

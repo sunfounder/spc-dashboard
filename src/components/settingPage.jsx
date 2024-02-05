@@ -34,7 +34,7 @@ import {
 } from '@mui/icons-material';
 
 const SettingPage = (props) => {
-  const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("SPCTheme") === "dark" ? true : false);
+  const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("spc-dashboard-theme") === "dark" ? true : false);
   const [showPassword, setShowPassword] = useState(false);
   const [hasError, setHasError] = useState({});
   const [mqttTestState, setMqttTestState] = useState("idle");

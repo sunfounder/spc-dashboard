@@ -51,15 +51,15 @@ const DashboardPanel = (props) => {
   return (<Box sx={{ width: "100%", height: "100%", overflowY: "scroll", overflowX: "hidden" }}>
     <Panel title={props.boardName} {...props}>
       <Box sx={{ display: "flex", flexFlow: "wrap", gap: "70px 40px" }}>
-        {props.peripherals.includes('usb_in') && <ExternalInputCard theme={props.theme} data={data} bytesFormatter={bytesFormatter} />}
-        {props.peripherals.includes('fan') && <FanCard theme={props.theme} data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
-        {props.peripherals.includes('battery') && <BatteryCard theme={props.theme} data={data} />}
-        {props.peripherals.includes('output') && <RaspberryPiPowerCard theme={props.theme} data={data} />}
+        {props.peripherals.includes('usb_in') && <ExternalInputCard data={data} bytesFormatter={bytesFormatter} />}
+        {props.peripherals.includes('fan') && <FanCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
+        {props.peripherals.includes('battery') && <BatteryCard data={data} />}
+        {props.peripherals.includes('output') && <RaspberryPiPowerCard data={data} />}
 
-        <StorageCard theme={props.theme} data={data} />
-        <MemoryCard theme={props.theme} data={data} />
-        <NetworkCard theme={props.theme} data={data} />
-        <ProcessorCard theme={props.theme} data={data} />
+        <StorageCard data={data} />
+        <MemoryCard data={data} />
+        <NetworkCard data={data} />
+        <ProcessorCard data={data} />
       </Box >
     </Panel >
   </Box>

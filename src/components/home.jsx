@@ -218,7 +218,6 @@ const Home = (props) => {
   const commonProps = {
     boardName: boardName,
     peripherals: peripherals,
-    theme: props.theme,
     request: request,
     tabIndex: tabIndex,
     onTabChange: handleTabChange,

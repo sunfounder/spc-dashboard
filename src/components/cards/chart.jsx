@@ -2,9 +2,11 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatBytes } from '../../js/utils.js';
 import Graph from './graph.jsx';
+import { useTheme } from '@mui/material/styles';
 
 const Chart = (props) => {
-  const { theme, detail, processorChartAmount } = props;
+  const theme = useTheme();
+  const { detail } = props;
   const bytesFormatter = (value, name, props) => {
     let unit = props.unit;
     if (unit === 'B' || unit === 'B/s') {
@@ -16,12 +18,12 @@ const Chart = (props) => {
     }
     return value;
   };
-  return <Graph theme={theme} processorChartAmount={processorChartAmount}>
+  return <Graph>
     <ResponsiveContainer width="100%" height="100%">
       <LineChart width={600} height={300} data={props.data}>
         <Tooltip
           contentStyle={{
-            backgroundColor: theme.cardBackgroundColor,
+            backgroundColor: theme.palette.background.paper,
             borderRadius: '1vh',
             border: 0,
           }}
@@ -38,7 +40,6 @@ const Chart = (props) => {
         })}
 
         {Object.keys(detail).map((key, index) => {
-          // if (detail[key].chart) {
           return (
             <Line
               type="monotone"

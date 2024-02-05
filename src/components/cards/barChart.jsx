@@ -6,7 +6,7 @@ import "./barChart.css"
 
 
 const BarChart = (props) => {
-  const { theme, processorChartAmount } = props;
+  const { processorChartAmount } = props;
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [hoveredPosition, setHoveredPosition] = useState({ x: 0, y: 0 });
 
@@ -19,7 +19,7 @@ const BarChart = (props) => {
     setHoveredIndex(null);
   };
   return (
-    <Graph theme={theme} processorChartAmount={processorChartAmount}>
+    <Graph processorChartAmount={processorChartAmount}>
       <div
         className='barChartBox'
         onMouseMove={(event) => {
@@ -56,7 +56,6 @@ const BarChart = (props) => {
               >
                 {props.data[hoveredIndex].time}
               </Typography>
-              {/* <span>{props.data[hoveredIndex].percent} % Used</span> */}
               <Typography
                 color={`${props.color}.main`}
                 sx={{ margin: "0px 0px 5px 0" }}
