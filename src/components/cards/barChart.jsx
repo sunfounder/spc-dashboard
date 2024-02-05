@@ -41,7 +41,7 @@ const BarChart = (props) => {
             >
               <Paper className='barUsed' elevation={5} sx={{ width: `${item.percent}%`, bgcolor: `${props.color}.main` }}></Paper>
               {/* 中间空隙占2% */}
-              <Paper className='barFree' theme={theme} elevation={5} sx={{ width: `${100 - item.percent - 2}%`, }}></Paper>
+              <Paper className='barFree' elevation={5} sx={{ width: `${100 - item.percent - 2}%`, }}></Paper>
             </div>
           ))}
         </div>

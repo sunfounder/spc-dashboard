@@ -227,7 +227,7 @@ const Home = (props) => {
   }
 
   return (
-    <Box id="home" style={{ color: props.theme.primary }} sx={{
+    <Box id="home" sx={{
       width: "100%",
       height: "100%",
       overflow: "hidden",
