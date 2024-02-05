@@ -14,7 +14,9 @@ import LogIcon from '@mui/icons-material/Article.js';
 
 const Navbar = (props) => {
   return (
-    <Box id="nav" sx={{ display: "flex", borderRadius: "20px", justifyContent: "space-between", padding: "10px 20px", height: "60px" }}>
+    <Box id="nav" sx={{
+      display: "flex", borderRadius: "20px", justifyContent: "space-between", padding: "10px 20px", height: "60px", alignItems: "center"
+    }}>
       <Box sx={{ display: "flex", gap: "30px" }}>
         <Typography variant="h5" sx={{ margin: "auto", width: "150px" }}> {props.title}</Typography>
         <Tabs value={props.tabIndex} onChange={props.onTabChange}>

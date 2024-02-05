@@ -130,7 +130,12 @@ const Home = (props) => {
     console.log("getInitData, configData", _configData);
     let data = await request("get-history", "GET", { n: 1 });
     console.log("getInitData, data", data);
-    if (data.board_id && PRODUCT[data.board_id]) setPeripherals(PRODUCT[data.board_id].peripherals)
+    let peripherals = [];
+    if (data.board_id !== undefined && PRODUCT[data.board_id]) {
+      peripherals = PRODUCT[data.board_id].peripherals;
+      console.log("peripherals", peripherals);
+      setPeripherals(peripherals);
+    }
     if (data.board_name) setBoardName(data.board_name);
     if (_configData) setConfigData(_configData);
   }, [request])
@@ -218,6 +223,7 @@ const Home = (props) => {
     tabIndex: tabIndex,
     onTabChange: handleTabChange,
     onSettingPage: handleSettingPage,
+    showSnackBar: showSnackBar,
   }
 
   return (
