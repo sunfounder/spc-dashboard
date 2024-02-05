@@ -1,31 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
 import FanControl from './fanControl.jsx';
 import { timeFormatting, firstUpperCase } from '../../js/utils.js';
 
+const fanModes = [
+  'quiet',
+  'normal',
+  'performance',
+  'auto',
+];
+
 const FanCard = (props) => {
-  let fanModeValue = 0;
-  const fanModes = [
-    'quiet',
-    'normal',
-    'performance',
-    'auto',
-  ];
-  if (props.data.length > 0) {
-    let fanModesData = props.data[props.data.length - 1].fan_mode;
-    fanModeValue = fanModes.indexOf(fanModesData);
-  }
-  const [fanState, setFanState] = useState(false);
+  const [fanModeValue, setFanModeValue] = useState(null);
+  const [fanState, setFanState] = useState(null);
+
+  useEffect(() => {
+    if (fanModeValue === null) {
+      if (props.data.length > 0) {
+        let _fanModeValue = 0;
+        let fanModesData = props.data[props.data.length - 1].fan_mode;
+        _fanModeValue = fanModes.indexOf(fanModesData);
+        setFanModeValue(_fanModeValue);
+      }
+    }
+    if (fanState === null) {
+      if (props.data.length > 0) {
+        let _fanState = false;
+        _fanState = props.data[props.data.length - 1].fan_state;
+        setFanState(_fanState);
+      }
+    }
+  }, [props.data, fanModeValue, fanState]);
 
   const sendFanMode = async (mode) => {
     let payload = { data: mode }
-    // await sendData("set-fan-mode", mode);
     await props.request("set-fan-mode", "POST", payload);
   }
+
   const sendFanState = async (state) => {
     let payload = { data: state }
-    // await sendData("set-fan-state", state);
     await props.request("set-fan-state", "POST", payload);
   }
 
@@ -34,6 +48,7 @@ const FanCard = (props) => {
     let mode = fanModes[index];
     console.log(mode)
     sendFanMode(mode);
+    setFanModeValue(index);
     if (!fanState) {
       handleFanStateChange(true);
     }

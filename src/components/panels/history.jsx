@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Card,
-  FormGroup,
-  FormControlLabel,
   Checkbox,
   Typography,
   Menu,
@@ -14,7 +12,18 @@ import {
   IconButton,
   InputAdornment,
   MenuList,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Grid,
 } from '@mui/material';
+import MuiToolTip from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
+import DownloadIcon from '@mui/icons-material/Download';
+
+
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { CalendarIcon } from '@mui/x-date-pickers';
@@ -30,7 +39,27 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+
 } from 'recharts';
+
+import {
+  red,
+  pink,
+  purple,
+  deepPurple,
+  indigo,
+  blue,
+  lightBlue,
+  cyan,
+  teal,
+  green,
+  lightGreen,
+  lime,
+  yellow,
+  amber,
+  orange,
+  deepOrange,
+} from '@mui/material/colors';
 
 import dayjs from 'dayjs';
 
@@ -42,20 +71,36 @@ const QuickSelect = {
   "last-1-hour": "Last 1 hour",
   "last-2-hours": "Last 2 hours",
   "last-4-hours": "Last 4 hours",
-  "last-8-hours": "Last 8 hours",
-  "last-12-hours": "Last 12 hours",
-  "last-24-hours": "Last 24 hours",
-  "last-3-days": "Last 3 days",
   "today": "Today",
   "yesterday": "Yesterday",
 }
 
+const Colors = [
+  red,
+  pink,
+  purple,
+  deepPurple,
+  indigo,
+  blue,
+  lightBlue,
+  cyan,
+  teal,
+  green,
+  lightGreen,
+  lime,
+  yellow,
+  amber,
+  orange,
+  deepOrange,
+]
+
 const HistoryPanel = (props) => {
   const [keys, setKeys] = useState([]);
   const [data, setData] = useState([]);
-  const [start, setStart] = useState(parseInt(window.localStorage.getItem("spc-dashboard-history-start")) || dayjs().subtract(1, "day").unix());
-  const [end, setEnd] = useState(parseInt(window.localStorage.getItem("spc-dashboard-history-end")) || dayjs().unix());
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(JSON.parse(window.localStorage.getItem("spc-dashboard-history-selected-keys")) || []);
+  const [colors, setColors] = useState(JSON.parse(window.localStorage.getItem("spc-dashboard-history-colors")) || {});
 
   const updateData = useCallback(async () => {
     if (selectedKeys.length === 0) {
@@ -85,12 +130,18 @@ const HistoryPanel = (props) => {
 
   const handleKeyChange = (key, checked) => {
     let temp = [];
+    let newColors = { ...colors };
     if (checked) {
       temp = [...selectedKeys, key];
+      let colorIndex = Math.floor(Math.random() * Colors.length);
+      newColors[key] = Colors[colorIndex][500];
     } else {
       temp = selectedKeys.filter(k => k !== key);
+      delete newColors[key];
     }
     window.localStorage.setItem("spc-dashboard-history-selected-keys", JSON.stringify(temp));
+    window.localStorage.setItem("spc-dashboard-history-colors", JSON.stringify(newColors));
+    setColors(newColors);
     setSelectedKeys(temp);
   }
 
@@ -104,48 +155,60 @@ const HistoryPanel = (props) => {
     }
   }
 
+  const handleColorChange = (key, color) => {
+    let newColors = { ...colors };
+    newColors[key] = color;
+    window.localStorage.setItem("spc-dashboard-history-colors", JSON.stringify(newColors));
+    setColors(newColors);
+  }
+
+  const handleDownloadCSV = () => {
+    console.log("download csv");
+    let csv = "data:text/csv;charset=utf-8,";
+    let header = ["time", ...selectedKeys];
+    csv += header.join(",") + "\n";
+    data.forEach((row) => {
+      let temp = [];
+      header.forEach((key) => {
+        temp.push(row[key]);
+      });
+      csv += temp.join(",") + "\n";
+    });
+    let encodedUri = encodeURI(csv);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "data.csv");
+    document.body.appendChild(link);
+    link.click();
+  }
+
   return (
     <Panel title="History" {...props} sx={{ height: "100%", overflow: "hidden" }} navActions={
-      <DateTimeRangePicker onChange={handleTimeRangeChange} onError={(msg) => props.showSnackBar("error", msg)} />
+      <>
+        <DateTimeRangePicker onChange={handleTimeRangeChange} onError={(msg) => props.showSnackBar("error", msg)} />
+        <IconButton id="download" aria-label="download" color="primary" onClick={handleDownloadCSV}>
+          <MuiToolTip title="Download CSV">
+            <DownloadIcon />
+          </MuiToolTip>
+        </IconButton>
+      </>
     }>
       <Box sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden", gap: "2rem" }}>
         <Card sx={{ display: "flex", width: "320px", height: "100%", overflow: "hidden scroll", padding: "0 10px" }}>
-          <FormGroup sx={{ height: "fit-content" }}>
+          <List dense sx={{ height: "fit-content" }}>
             {keys.map((key, index) => {
               return (
-                <FormControlLabel
-                  control={<Checkbox checked={selectedKeys.includes(key)} onChange={(event) => { handleKeyChange(key, event.target.checked) }} />}
-                  label={key}
-                />
-              );
+                <DataListItem key={key} name={key}
+                  checked={selectedKeys.includes(key)}
+                  color={colors[key]}
+                  onClick={handleKeyChange}
+                  onColorChange={handleColorChange}
+                />);
             })}
-          </FormGroup>
+          </List>
         </Card >
         <Card sx={{ width: "100%" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              width={500}
-              height={300}
-              data={data}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              {selectedKeys.map((key, index) => {
-                return (
-                  <Line type="monotone" dataKey={key} stroke="#8884d8" key={index} isAnimationActive={false} dot={false} />
-                );
-              })}
-            </LineChart>
-          </ResponsiveContainer>
+          <Chart data={data} keys={selectedKeys} colors={colors} />
         </Card>
       </Box >
     </Panel>
@@ -153,10 +216,10 @@ const HistoryPanel = (props) => {
 }
 
 const DateTimeRangePicker = (props) => {
-  const [start, setStart] = useState(parseInt(window.localStorage.getItem("spc-dashboard-history-start")) || dayjs().subtract(1, "day").unix());
+  const [start, setStart] = useState(parseInt(window.localStorage.getItem("spc-dashboard-history-start")) || dayjs().subtract(5, "minute").unix());
   const [end, setEnd] = useState(parseInt(window.localStorage.getItem("spc-dashboard-history-end")) || dayjs().unix());
-  const [quickSelect, setQuickSelect] = useState(window.localStorage.getItem("spc-dashboard-history-quick-select") || "last-24-hours");
-  const [label, setLabel] = useState(QuickSelect[quickSelect] || "Last 24 hours");
+  const [quickSelect, setQuickSelect] = useState(window.localStorage.getItem("spc-dashboard-history-quick-select") || "last-5-minutes");
+  const [label, setLabel] = useState(QuickSelect[quickSelect] || "Last 5 minutes");
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const openMenu = Boolean(menuAnchorEl);
 
@@ -316,5 +379,117 @@ const DateTimeRangePicker = (props) => {
   );
 }
 
+const DataListItem = (props) => {
+  const [colorMenuAnchorEl, setColorMenuAnchorEl] = useState(null);
+  const openColorMenu = Boolean(colorMenuAnchorEl);
+
+  const handleColorMenuShow = (event) => {
+    setColorMenuAnchorEl(event.currentTarget);
+  }
+
+  const handleColorMenuClose = () => {
+    setColorMenuAnchorEl(null);
+  }
+
+  const handleKeyChange = (event) => {
+    props.onClick(props.name, event.target.checked);
+  }
+
+  const handleColorChange = (key, color) => {
+    props.onColorChange(key, color);
+    handleColorMenuClose();
+  }
+
+  return (
+    <ListItem
+      key={props.name}
+      secondaryAction={props.color &&
+        <IconButton aria-label="color" onClick={handleColorMenuShow}>
+          <Box sx={{ bgcolor: props.color, width: "20px", height: "20px", borderRadius: "50%" }} />
+        </IconButton>
+      }
+      disablePadding
+      disableGutters
+    >
+      <ListItemButton dense
+        disableGutters
+        onClick={handleKeyChange} >
+        <ListItemIcon sx={{ minWidth: "unset" }}>
+          <Checkbox
+            edge="start"
+            checked={props.checked}
+            tabIndex={-1}
+            disableRipple
+            inputProps={{ 'aria-labelledby': props.name }}
+          />
+        </ListItemIcon>
+        <ListItemText id={props.name} primary={props.name} />
+      </ListItemButton>
+      <Menu
+        id="color-menu"
+        anchorEl={colorMenuAnchorEl}
+        open={openColorMenu}
+        onClose={handleColorMenuClose}
+      >
+        <Grid container spacing={1} sx={{ width: "160px" }}>
+          {Colors.map((color, index) => {
+            return (
+              <Grid item key={index} xs={3} sx={{ textAlign: "center" }}>
+                <IconButton
+                  aria-label="color"
+                  onClick={() => handleColorChange(props.name, color[500])}
+                >
+                  <Box sx={{ bgcolor: color[500], width: "20px", height: "20px", borderRadius: "50%" }} />
+                </IconButton>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Menu>
+    </ListItem>
+  );
+}
+
+const Chart = (props) => {
+  const theme = useTheme();
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart
+        width={500}
+        height={300}
+        data={props.data}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <Tooltip
+          contentStyle={{
+            backgroundColor: theme.palette.background.paper,
+            borderRadius: '1vh',
+          }}
+        />
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="time" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        {props.keys.map((key, index) => {
+          return (
+            <Line
+              type="monotone"
+              dataKey={key}
+              stroke={props.colors[key]}
+              key={index}
+              isAnimationActive={false}
+              dot={false} />
+          );
+        })}
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
 
 export default HistoryPanel;

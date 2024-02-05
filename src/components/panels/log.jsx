@@ -123,6 +123,11 @@ const LogPanel = (props) => {
     return () => clearInterval(interval);
   }, [getLog, lines, level, filter, autoUpdate, logFile]);
 
+  // 自动更新
+  useEffect(() => {
+    getLog();
+  }, [getLog, lines, level, filter, logFile]);
+
   useEffect(() => {
     if (autoScroll) {
       const contentElement = contentRef.current;
@@ -138,7 +143,7 @@ const LogPanel = (props) => {
     </Tooltip>}
   >
     <Box sx={{ display: "flex", width: "100%", height: "90%", gap: "2rem" }}>
-      <Card id="log-list" >
+      <Card id="log-list" sx={{ overflow: "auto" }}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
@@ -152,7 +157,7 @@ const LogPanel = (props) => {
       </Card >
       <Card id="log-content" sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
         <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} />
-        <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "scroll"} scroll` }}>
+        <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "auto"} auto` }}>
           <List>
             {fileContent.map((line, index) => {
               return <ListItem key={index} disablePadding>
